@@ -28,4 +28,14 @@ graph.add_node("chat_node" , chat_node)
 graph.add_edge(START , "chat_node")
 graph.add_edge("chat_node" , END)
 
-workflow = graph.compile()
+workflow = graph.compile(checkpointer = checkpointer)
+
+stream = workflow.stream(
+    {"messages":[HumanMessage(content ='what is STreaming')]},
+    config = {'configurable':{"thread_id":'1'}},
+    stream_mode = "messages"
+)
+
+for message_chunk , metadata in stream:
+    if message_chunk.content:
+        print(message_chunk.content , flush = False)
