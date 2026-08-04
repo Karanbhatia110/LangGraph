@@ -3,7 +3,6 @@ import streamlit as st
 from backend import workflow
 import uuid
 
-
 def generate_thread_id():
     thread_id = uuid.uuid4()
     return thread_id
@@ -12,6 +11,10 @@ def reset_chat():
     thread_id = generate_thread_id()
     st.session_state['thread_id'] = thread_id
     st.session_state["message_history"] = []
+
+def add_threads(thread_id):
+    if thread_id not in st.state[""]:
+
 
 if 'message_history' not in st.session_state:
     st.session_state['message_history'] = []
@@ -23,6 +26,9 @@ CONFIG = {'configurable':{'thread_id': st.session_state['thread_id']}}
 
 if 'message_history' not in st.session_state:
     st.session_state['message_history'] = []
+
+if 'chat_threads' not in st.session_state:
+    
 
 ####sidebar
 
