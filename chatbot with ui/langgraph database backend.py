@@ -6,7 +6,8 @@ from math import sqrt
 from pydantic import BaseModel , Field
 from langchain_core.messages import BaseMessage, HumanMessage
 from langgraph.graph import add_messages
-from langgraph.checkpoint.memory import MemorySaver , InMemorySaver 
+from langgraph.checkpoint.sqlite import SqliteSaver
+import sqlite3 
 load_dotenv()
 
 model = ChatGoogleGenerativeAI(model = "gemini-2.5-flash")
@@ -19,7 +20,10 @@ def chat_node(state: LLMstate) :
     response = model.invoke(messages)
     return {"messages":[response]}
 
-checkpointer = InMemorySaver()
+
+conn = sqlite3.connect(database = "chatbot.db" , check_same_thread=False)
+
+checkpointer = SqliteSaver(conn = conn)
 
 graph = StateGraph(LLMstate)
 
@@ -29,6 +33,17 @@ graph.add_edge(START , "chat_node")
 graph.add_edge("chat_node" , END)
 
 workflow = graph.compile(checkpointer = checkpointer)
+
+####test
+
+CONFIG = {'configurable': {'thread_id': 'thread-1'}}
+
+response = workflow.invoke(
+    {'messages': [HumanMessage(content='what is my name?')]},
+    config = CONFIG
+)
+
+print(response)
 
 # stream = workflow.stream(
 #     {"messages":[HumanMessage(content ='what is STreaming')]},
