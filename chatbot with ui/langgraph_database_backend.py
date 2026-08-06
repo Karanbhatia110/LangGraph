@@ -35,15 +35,21 @@ graph.add_edge("chat_node" , END)
 workflow = graph.compile(checkpointer = checkpointer)
 
 ####test
+def retrieve_all_threads():
+    all_threads = set()
+    for checkpoint in checkpointer.list(None):
+        all_threads.add(checkpoint.config['configurable']['thread_id'])
+    
+    return list(all_threads)
 
-CONFIG = {'configurable': {'thread_id': 'thread-1'}}
+# CONFIG = {'configurable': {'thread_id': 'thread-1'}}
 
-response = workflow.invoke(
-    {'messages': [HumanMessage(content='what is my name?')]},
-    config = CONFIG
-)
+# response = workflow.invoke(
+#     {'messages': [HumanMessage(content='what is my name?')]},
+#     config = CONFIG
+# )
 
-print(response)
+# print(response)
 
 # stream = workflow.stream(
 #     {"messages":[HumanMessage(content ='what is STreaming')]},
